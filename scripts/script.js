@@ -190,20 +190,28 @@ const unsorted = {
 // ]
 
 window.setTimeout(() => {
+    document.body.addEventListener('click', e => {
+        let closePP = true
+        e.path.forEach(it => {
+            if (it.id === 'popup') {
+                closePP = false;
+            }
+        })
+        if (closePP) {
+            document.getElementById('popup').className = ''
+        }
+    })
+
     document.getElementById('input-file').addEventListener('change', e => {
         parseExcel(e.target.files[0]);
     })
 
     document.getElementById('price-container').addEventListener('click', () => {
-        show_pp();
+        window.setTimeout(() => {
+            show_pp();
+        }, 50)
     })
 
-    document.body.addEventListener('click', e => {
-        const clickPP = true;
-        if (!clickPP) {
-            document.getElementById('popup').className = ''
-        }
-    })
 }, 50)
 const buyList = [];
 let totalPrice = 0
@@ -282,10 +290,6 @@ function sortToBrands(arr) {
     unsortedIndexes.forEach(i => {
         unsorted.values.push(arr[i]);
     })
-
-    console.log(tobaccoBrands);
-    console.log(unsorted);
-
     fill(tobaccoBrands);
     fill(unsorted)
 }
@@ -399,7 +403,6 @@ function changeTotalPrice() {
             }
 
             item.totalPrice = item.basePrice * item.amount
-            console.log(item)
             totalPrice += item.totalPrice;
         })
     })
@@ -435,7 +438,6 @@ function changeAllPositions() {
     document.getElementById('popup_top_count').innerText = `Товаров: ${res}`
 }
 
-// todo при удалении сбрасывается счетчик
 function getChangeCounter(obj, i) {
     const result = document.createElement('div')
     result.className = 'add';
@@ -447,8 +449,8 @@ function getChangeCounter(obj, i) {
 
     const count = document.createElement('div')
     count.id = `add_count-${i}`
-    count.className = `add_count`
-    count.innerText = obj.count || 1
+    count.className = 'add_count';
+    count.innerText = obj.amount || 1
 
     const plus = document.createElement('div')
     plus.className = 'add_plus'
@@ -496,5 +498,5 @@ function copy() {
             amount: it.amount,
         });
     })
-    console.log(result)
+    console.log('copy', result)
 }
