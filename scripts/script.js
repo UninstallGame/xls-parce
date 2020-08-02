@@ -1,42 +1,3 @@
-window.setTimeout(() => {
-    document.getElementById('input-file').addEventListener('change', e => {
-        parseExcel(e.target.files[0])
-    })
-
-    document.getElementById('price-container').addEventListener('click', () => {
-
-        document.getElementById('positions').innerHTML = '';
-
-        buyList.forEach(it => {
-            const wrapper = document.createElement('div')
-            const title = document.createElement('span')
-            title.innerText = it.title
-            const price = document.createElement('span')
-            price.innerText = it.price
-            const amount = getChangeCounter(it)
-            const removeBtn = document.createElement('span')
-            removeBtn.innerText = 'x'
-            wrapper.appendChild(title);
-            wrapper.appendChild(price);
-            wrapper.appendChild(amount);
-            wrapper.appendChild(removeBtn);
-
-            document.getElementById('positions').appendChild(wrapper)
-            document.getElementById('popup').className = 'show-pp';
-        })
-    })
-
-    document.body.addEventListener('click', e => {
-        const clickPP = true;
-        if (!clickPP) {
-            document.getElementById('popup').className = ''
-        }
-    })
-}, 50)
-
-/**
- * Табак
- */
 const tobaccoBrands = [
     {
         title: 'A&E',
@@ -200,8 +161,10 @@ const tobaccoBrands = [
     },
 ]
 
-const buyList = [];
-let totalPrice = 0
+const unsorted = {
+    title: 'Не сгрупировано',
+    values: []
+}
 
 // const teaBrands = [
 //     {
@@ -226,34 +189,24 @@ let totalPrice = 0
 //     },
 // ]
 
-const unsorted = {
-    title: 'Не сгрупировано',
-    values: []
-}
+window.setTimeout(() => {
+    document.getElementById('input-file').addEventListener('change', e => {
+        parseExcel(e.target.files[0]);
+    })
 
-// todo obj.id
-function getChangeCounter(obj) {
-    const result = document.createElement('div')
-    result.className = 'add';
+    document.getElementById('price-container').addEventListener('click', () => {
+        show_pp();
+    })
 
-    const minus = document.createElement('div')
-    minus.className = 'add_minus'
-    minus.addEventListener('click', () => changeAmount(obj, false, obj.id))
-
-    const count = document.createElement('div')
-    count.id = `add_count-${obj.id}`
-    count.innerText = '1'
-
-    const plus = document.createElement('div')
-    plus.className = 'add_plus'
-    plus.addEventListener('click', () => changeAmount(obj, true, obj.id))
-
-    result.appendChild(minus)
-    result.appendChild(count)
-    result.appendChild(plus)
-
-    return result;
-}
+    document.body.addEventListener('click', e => {
+        const clickPP = true;
+        if (!clickPP) {
+            document.getElementById('popup').className = ''
+        }
+    })
+}, 50)
+const buyList = [];
+let totalPrice = 0
 
 function parseExcel(file) {
     const reader = new FileReader();
@@ -282,11 +235,35 @@ function parseExcel(file) {
                 const basePrice = obj[it]['v']
                 result.push({title, basePrice, amount: 1, totalPrice: basePrice})
             })
-        sortToBrands(result)
-        console.log(result);
+        sortToBrands(result);
     };
 
     reader.readAsBinaryString(file);
+}
+
+function show_pp() {
+    document.getElementById('positions').innerHTML = '';
+
+    buyList.forEach((it, i) => {
+        const wrapper = document.createElement('div')
+        const title = document.createElement('span')
+        title.innerText = it.title
+        const price = document.createElement('span')
+        price.innerText = it.totalPrice
+        const amount = getChangeCounter(it, i)
+        const removeBtn = document.createElement('img')
+        removeBtn.src = 'assets/trash-solid.svg'
+        removeBtn.width = 16
+        removeBtn.addEventListener('click', () => remove(it))
+
+        wrapper.appendChild(title);
+        wrapper.appendChild(price);
+        wrapper.appendChild(amount);
+        wrapper.appendChild(removeBtn);
+
+        document.getElementById('positions').appendChild(wrapper)
+        document.getElementById('popup').className = 'show-pp';
+    })
 }
 
 function sortToBrands(arr) {
@@ -369,6 +346,14 @@ function getNewRow(obj, brandObj) {
     const td3 = document.createElement('td')
     td3.innerText = 'Купить'
     td3.id = 'buy'
+
+    if (obj.selected) {
+        td3.innerText = 'В корзине'
+        td1.id = 'buy-on'
+        td2.id = 'buy-on'
+        td3.id = 'buy-on'
+    }
+
     td3.addEventListener('click', () => {
         if (obj.selected) {
             td3.innerText = 'Купить'
@@ -379,7 +364,6 @@ function getNewRow(obj, brandObj) {
             td3.id = 'buy'
             obj.selected = false
             brandObj.count -= 1
-            changeTotalPrice(obj)
         } else {
             buyList.push(obj)
             td3.innerText = 'В корзине'
@@ -389,7 +373,6 @@ function getNewRow(obj, brandObj) {
             obj.selected = true
             if (!brandObj.count) brandObj.count = 0
             brandObj.count += 1
-            changeTotalPrice(obj, true)
         }
         changeCounters(brandObj.id, brandObj.count)
         changeTotalPrice()
@@ -403,22 +386,45 @@ function getNewRow(obj, brandObj) {
 
 }
 
-function changeTotalPrice(obj, add) {
-    obj.totalPrice = obj.basePrice * obj.amount
-    add ? totalPrice += obj.totalPrice : totalPrice -= obj.totalPrice
+function changeTotalPrice() {
+    totalPrice = 0
+    tobaccoBrands.forEach(it => {
+        if (!it.count) {
+            return
+        }
+
+        it.values.forEach(item => {
+            if (!item.selected) {
+                return
+            }
+
+            item.totalPrice = item.basePrice * item.amount
+            console.log(item)
+            totalPrice += item.totalPrice;
+        })
+    })
     document.getElementById('total-price').innerText = `Ориентировочная сумма: ${totalPrice}`
     document.getElementById('popup_top_total-price').innerText = `Итого: ${totalPrice}`
 }
 
-function changeCounters(id, count) {
-    const element = document.getElementById(`count-${id}`)
-    if (!count) {
-        element.innerText = ''
-        return;
-    }
-    element.innerText = `Выбрано: ${count}`
-    element.style.color = '#28a745'
-    element.style.fontWeight = '500'
+function changeCounters() {
+    tobaccoBrands.forEach(it => {
+        it.count = 0
+        it.values.forEach(item => {
+            if (item.selected) {
+                it.count++
+            }
+
+        })
+        const element = document.getElementById(`count-${it.id}`)
+        if (!it.count) {
+            element.innerText = ''
+            return;
+        }
+        element.innerText = `Выбрано: ${it.count}`
+        element.style.color = '#28a745'
+        element.style.fontWeight = '500'
+    })
 }
 
 function changeAllPositions() {
@@ -429,18 +435,66 @@ function changeAllPositions() {
     document.getElementById('popup_top_count').innerText = `Товаров: ${res}`
 }
 
+// todo при удалении сбрасывается счетчик
+function getChangeCounter(obj, i) {
+    const result = document.createElement('div')
+    result.className = 'add';
+
+    const minus = document.createElement('div')
+    minus.className = 'add_minus'
+    minus.innerText = '-'
+    minus.addEventListener('click', () => changeAmount(obj, false, i))
+
+    const count = document.createElement('div')
+    count.id = `add_count-${i}`
+    count.className = `add_count`
+    count.innerText = obj.count || 1
+
+    const plus = document.createElement('div')
+    plus.className = 'add_plus'
+    plus.innerText = '+'
+    plus.addEventListener('click', () => changeAmount(obj, true, i))
+
+    result.appendChild(minus)
+    result.appendChild(count)
+    result.appendChild(plus)
+
+    return result;
+}
+
 function changeAmount(obj, add, i) {
     if (add) {
         obj.amount++
     } else {
-        if (objx.amount === 0) {
+        if (obj.amount === 1) {
             return;
         }
         obj.amount--
     }
+    changeTotalPrice()
     document.getElementById(`add_count-${i}`).innerText = `${obj.amount}`
 }
 
-function remove() {
+function remove(obj) {
+    obj.selected = false
+    obj.count = 1;
+    document.getElementById('content').innerHTML = ''
+    fill(tobaccoBrands);
+    const i = buyList.indexOf(obj)
+    buyList.splice(i, 1)
+    changeTotalPrice()
+    show_pp();
+    changeCounters();
+    changeAllPositions();
+}
 
+function copy() {
+    const result = [];
+    buyList.forEach(it => {
+        result.push({
+            title: it.title,
+            amount: it.amount,
+        });
+    })
+    console.log(result)
 }
