@@ -1,3 +1,7 @@
+// todo при удалении из пп позиций, сбивается счетчик денег
+// todo не открывается попап заказа
+// todo ошибки 'innerText' of null при удалении
+
 const tobaccoBrands = [
     {
         title: 'A&E',
@@ -161,37 +165,14 @@ const tobaccoBrands = [
     },
 ]
 
-// todo сделать рабочим (не считается сумма, количество. Не отображается выбранные позиции в шапке бренда)
 const unsorted = {
-    title: 'Без категории>',
+    title: 'Без категории',
     values: []
 }
 
-// const teaBrands = [
-//     {
-//         title: 'Chabacco',
-//         values: []
-//     },
-//     {
-//         title: 'Blaze',
-//         values: []
-//     },
-//     {
-//         title: 'BRUSKO',
-//         values: []
-//     },
-//     {
-//         title: 'Malaysian Mix by Danger',
-//         values: []
-//     },
-//     {
-//         title: 'Cobra',
-//         values: []
-//     },
-// ]
-
 window.setTimeout(() => {
-    document.body.addEventListener('click', e => {
+    // Если нажали не на пп, скрыть его
+    document.body.addEventListener('mousedown', e => {
         let closePP = true
         e.path.forEach(it => {
             if (it.id === 'popup') {
@@ -203,13 +184,15 @@ window.setTimeout(() => {
         }
     })
 
+    // Выбрали файл
     document.getElementById('input-file').addEventListener('change', e => {
         parseExcel(e.target.files[0]);
     })
 
+    // Нажали на то что должно открывать пп
     document.getElementById('price-container').addEventListener('click', () => {
         window.setTimeout(() => {
-            show_pp();
+            updatePopupContent();
         }, 50)
     })
 
@@ -217,6 +200,7 @@ window.setTimeout(() => {
 const buyList = [];
 let totalPrice = 0
 
+// Распарсить документ
 function parseExcel(file) {
     const reader = new FileReader();
 
@@ -250,31 +234,74 @@ function parseExcel(file) {
     reader.readAsBinaryString(file);
 }
 
-function show_pp() {
+// Обновить контент в попапе
+function updatePopupContent() {
     document.getElementById('positions').innerHTML = '';
-
     buyList.forEach((it, i) => {
-        const wrapper = document.createElement('div')
-        const title = document.createElement('span')
-        title.innerText = it.title
-        const price = document.createElement('span')
-        price.innerText = it.totalPrice
+        const table = document.createElement('table');
+        table.id = 'popup-table'
+        const tr = document.createElement('tr');
+        tr.style.backgroundColor = 'white'
+        if (buyList.length !== i + 1) {
+            tr.style.borderBottom = '1px solid #cbcaca'
+        }
+
+        let td1;
+
+        if (it.isEdit) {
+            td1 = document.createElement('td')
+            const input = document.createElement('input')
+            input.className = 'popup-input'
+            input.value = it.title || '';
+            input.addEventListener('change', (e) => {
+                it.title = e.target.value;
+            })
+            td1.appendChild(input)
+        } else {
+            td1 = document.createElement('td')
+            td1.innerText = it.title
+        }
+
+        td1.className = 'popup-table-title'
+
+        const td2 = document.createElement('td')
+        if (it.basePrice) {
+            td2.innerText = it.basePrice + ' ₽'
+        }
+        td2.className = 'popup-table-price'
+
+        const td3 = document.createElement('td')
         const amount = getChangeCounter(it, i)
-        const removeBtn = document.createElement('img')
+        td3.className = 'popup-table-counter'
+
+        if (!it.disableCounter) {
+            td3.appendChild(amount)
+        }
+
+        const td4 = document.createElement('td')
+
+        const removeBtn = document.createElement('img');
         removeBtn.src = 'assets/trash-solid.svg'
         removeBtn.width = 16
+        removeBtn.className = 'cursor-pointer'
         removeBtn.addEventListener('click', () => remove(it))
 
-        wrapper.appendChild(title);
-        wrapper.appendChild(price);
-        wrapper.appendChild(amount);
-        wrapper.appendChild(removeBtn);
+        td4.appendChild(removeBtn)
 
-        document.getElementById('positions').appendChild(wrapper)
+
+        tr.appendChild(td1);
+        tr.appendChild(td2);
+        tr.appendChild(td3);
+        tr.appendChild(td4);
+
+        table.appendChild(tr)
+
+        document.getElementById('positions').appendChild(table)
         document.getElementById('popup').className = 'show-pp';
     })
 }
 
+// Разобрать все по брендам
 function sortToBrands(arr) {
     const unsortedIndexes = [];
     arr.forEach((it, i) => {
@@ -292,16 +319,18 @@ function sortToBrands(arr) {
         unsorted.values.push(arr[i]);
     })
     fill(tobaccoBrands);
-    fill([unsorted])
+    fill([unsorted], 'unsorted')
 }
 
-function fill(arr) {
+// Заполнить таблицу
+function fill(arr, id) {
     arr.forEach((it, i) => {
-        it.id = i;
-        createBrandTable(it, i);
+        it.id = id ? id : i
+        createBrandTable(it, it.id);
     })
 }
 
+// Создать таблицу бренда
 function createBrandTable(obj, i) {
 
     const brandGroup = document.createElement('div');
@@ -338,6 +367,7 @@ function createBrandTable(obj, i) {
     document.getElementById('content').appendChild(brandGroup);
 }
 
+// Получить 1 строку таблицы
 function getNewRow(obj, brandObj) {
     const tr = document.createElement('tr')
     const td1 = document.createElement('td')
@@ -379,9 +409,9 @@ function getNewRow(obj, brandObj) {
             if (!brandObj.count) brandObj.count = 0
             brandObj.count += 1
         }
-        changeCounters(brandObj.id, brandObj.count)
-        changeTotalPrice()
-        changeAllPositions();
+        updateCounters(brandObj.id, brandObj.count)
+        updateTotalPrice()
+        updateAllPositions();
     })
 
     tr.appendChild(td1);
@@ -391,7 +421,8 @@ function getNewRow(obj, brandObj) {
 
 }
 
-function changeTotalPrice() {
+// Обновить общую стоймость
+function updateTotalPrice() {
     totalPrice = 0
     tobaccoBrands.forEach(it => {
         if (!it.count) {
@@ -407,11 +438,18 @@ function changeTotalPrice() {
             totalPrice += item.totalPrice;
         })
     })
+
+    unsorted.values.forEach(it => {
+        if (it.selected) {
+            it.totalPrice = it.basePrice * it.amount
+        }
+    })
     document.getElementById('total-price').innerText = `Ориентировочная сумма: ${totalPrice}`
-    document.getElementById('popup_top_total-price').innerText = `Итого: ${totalPrice}`
+    document.getElementById('popup_top_total-price').innerText = `Итого: ~${totalPrice}`
 }
 
-function changeCounters() {
+// Обновить количество выбранного
+function updateCounters() {
     tobaccoBrands.forEach(it => {
         it.count = 0
         it.values.forEach(item => {
@@ -429,16 +467,35 @@ function changeCounters() {
         element.style.color = '#28a745'
         element.style.fontWeight = '500'
     })
+
+
+    unsorted.values.forEach(it => {
+        it.count = 0
+        if (it.selected) {
+            it.count++
+        }
+        const elementUnsorted = document.getElementById(`count-unsorted`)
+        if (!it.count) {
+            elementUnsorted.innerText = ''
+            return;
+        }
+        elementUnsorted.innerText = `Выбрано: ${it.count}`
+        elementUnsorted.style.color = '#28a745'
+        elementUnsorted.style.fontWeight = '500'
+    })
 }
 
-function changeAllPositions() {
+// Обновить количество выбранных позиций в пп
+function updateAllPositions() {
     let res = 0;
     tobaccoBrands.forEach(it => {
         res += it.count || 0
     })
+    res += unsorted.count || 0
     document.getElementById('popup_top_count').innerText = `Товаров: ${res}`
 }
 
+// Взять крутилку количества
 function getChangeCounter(obj, i) {
     const result = document.createElement('div')
     result.className = 'add';
@@ -465,6 +522,7 @@ function getChangeCounter(obj, i) {
     return result;
 }
 
+// Работает в паре с крутилкой. Меняет количество позиций
 function changeAmount(obj, add, i) {
     if (add) {
         obj.amount++
@@ -474,10 +532,11 @@ function changeAmount(obj, add, i) {
         }
         obj.amount--
     }
-    changeTotalPrice()
+    updateTotalPrice()
     document.getElementById(`add_count-${i}`).innerText = `${obj.amount}`
 }
 
+// Удалить позицию
 function remove(obj) {
     obj.selected = false
     obj.count = 1;
@@ -485,12 +544,13 @@ function remove(obj) {
     fill(tobaccoBrands);
     const i = buyList.indexOf(obj)
     buyList.splice(i, 1)
-    changeTotalPrice()
-    show_pp();
-    changeCounters();
-    changeAllPositions();
+    updateTotalPrice()
+    updatePopupContent();
+    updateCounters();
+    updateAllPositions();
 }
 
+// todo скопировать в буфер обемна
 function copy() {
     const result = [];
     buyList.forEach(it => {
@@ -500,4 +560,22 @@ function copy() {
         });
     })
     console.log('copy', result)
+}
+
+// Добавить кастомное поле с инпутом
+function addCustom() {
+    buyList.push({
+        amount: 1,
+        isEdit: true
+    });
+    updatePopupContent();
+}
+
+function addDelivery(id) {
+    buyList.push({
+        amount: 1,
+        title: `+ Доставка - ${id === 1 ? 'Иркутская, 26' : '120й промквартал, 54Б'}`,
+        disableCounter: true,
+    });
+    updatePopupContent();
 }
