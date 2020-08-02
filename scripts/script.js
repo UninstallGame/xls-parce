@@ -161,8 +161,9 @@ const tobaccoBrands = [
     },
 ]
 
+// todo сделать рабочим (не считается сумма, количество. Не отображается выбранные позиции в шапке бренда)
 const unsorted = {
-    title: 'Не сгрупировано',
+    title: 'Без категории>',
     values: []
 }
 
@@ -291,7 +292,7 @@ function sortToBrands(arr) {
         unsorted.values.push(arr[i]);
     })
     fill(tobaccoBrands);
-    fill(unsorted)
+    fill([unsorted])
 }
 
 function fill(arr) {
