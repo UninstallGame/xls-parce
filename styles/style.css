@@ -1,0 +1,151 @@
+body {
+    background-color: #cbcaca;
+    margin: 0;
+    padding: 0;
+    font-family: 'Montserrat', sans-serif;
+}
+
+.head {
+    background-color: white;
+    padding: 20px;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+}
+
+#content {
+    padding: 20px;
+}
+
+.brand-group {
+    margin-bottom: 20px;
+    padding: 20px;
+    background-color: white;
+}
+
+.brand_title {
+    border-bottom: 1px solid #cbcaca;
+    padding-bottom: 20px;
+    cursor: pointer;
+    font-weight: 500;
+    display: flex;
+    justify-content: space-between;
+}
+
+.collapsed {
+    display: none;
+}
+
+.collapsed-title {
+    border-bottom: 0;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+}
+
+.brand_table {
+    margin-top: 25px;
+    width: 100%;
+}
+
+.table_head {
+    margin-bottom: 10px;
+}
+
+table {
+    border-collapse: collapse
+}
+
+td {
+    padding: 5px;
+}
+
+tr:nth-child(2n+1) {
+    background-color: #cbcaca;
+}
+
+.title {
+    width: 70%;
+}
+
+.price {
+    width: 15%;
+}
+
+#buy {
+    cursor: pointer;
+}
+
+#buy-on {
+    background-color: #28a745;
+    color: white;
+    cursor: pointer;
+}
+
+#total-price {
+    color: #28a745;
+    font-weight: 500;
+    margin-right: 5px;
+}
+
+#price-container {
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    cursor: pointer;
+}
+
+#popup {
+    position: absolute;
+    right: 10px;
+    top: 70px;
+    width: 280px;
+    border-radius: 10px;
+    background-color: white;
+    padding: 10px;
+    display: none;
+    box-shadow: 0 0 10px 1px #cbcaca
+}
+
+#popup_top {
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px solid #cbcaca;
+    padding: 5px 0 10px 0;
+    margin-bottom: 10px;
+}
+
+.show-pp {
+    display: block !important;
+}
+
+.add {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 18px;
+}
+
+.add_minus {
+    user-select: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    background-color: #cbcaca;
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+}
+
+.add_count {
+    margin: 0 10px;
+}
+
+.add_plus {
+    user-select: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    background-color: #cbcaca;
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+}
+
+/*#dc3545*/

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <!--    штуки для парса xls документа-->
+    <script src="scripts/other/jszip.js"></script>
+    <script src="scripts/other/xlsx.js"></script>
+    <script src="scripts/script.js"></script>
+    <link rel="stylesheet" href="styles/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;1,600&display=swap"
+          rel="stylesheet">
+    <title>ТабакПарсио v0.0.1</title>
+</head>
+<body>
+<div class="head">
+    <input id="input-file" type="file">
+    <div id="price-container">
+        <span id="total-price">Ориентировочная сумма: : 0</span>
+        <img width="16" src="shopping-cart-solid.svg" alt="">
+    </div>
+</div>
+<div id="content">
+</div>
+<div id="popup">
+    <div id="popup_top">
+        <div id="popup_top_count">Товаров: 23</div>
+        <div id="popup_top_total-price">Итого: 5555</div>
+    </div>
+<!--    <div class="add">-->
+<!--        <div class="add_minus" onclick="changeAmount({amount: 1})">-</div>-->
+<!--        <div class="add_count">1</div>-->
+<!--        <div class="add_plus" onclick="changeAmount({amount: 1}, true)">+</div>-->
+<!--    </div>-->
+    <div>Сумму к оплате вам скажут в чате</div>
+    <div>Сбербанк +79087753938 Ольга</div>
+
+    <div id="positions"></div>
+</div>
+</body>
+</html>
+
