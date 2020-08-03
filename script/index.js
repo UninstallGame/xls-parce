@@ -208,6 +208,11 @@ window.setTimeout(() => {
         }, 50)
     })
 
+    document.getElementById('button-collapse').addEventListener('click', () => {
+        collapseAllBrandCards();
+    })
+
+
 
 }, 50)
 const buyList = [];
@@ -618,6 +623,7 @@ function collapseAllBrandCards() {
     unsorted.hide = hide
     updateAllTables();
     updateCollapseAllButtonText();
+    updateCounters();
 }
 
 function updateCollapseAllButtonText() {
