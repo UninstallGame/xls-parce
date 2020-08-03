@@ -1,3 +1,7 @@
+html {
+    height: 100%;
+}
+
 body {
     background-color: #cbcaca;
     margin: 0;
@@ -262,5 +266,32 @@ tr:nth-child(2n+1) {
     background-color: white;
     padding: 20px;
     color: #6c757d;
-    margin: 10px 20px 0px 20px;
+    margin: 10px 20px 0 20px;
 }
+
+footer {
+    position: relative;
+    text-align: center;
+    height: 50px;
+    background-color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+a {
+    text-decoration: none;
+    color: #007bff;
+}
+
+.version {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    height: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0 10px;
+}
+
