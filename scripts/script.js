@@ -1,7 +1,3 @@
-// todo при удалении из пп позиций, сбивается счетчик денег
-// todo не открывается попап заказа
-// todo ошибки 'innerText' of null при удалении
-
 const tobaccoBrands = [
     {
         title: 'A&E',
