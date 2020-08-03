@@ -184,6 +184,18 @@ window.setTimeout(() => {
         }
     })
 
+    // на esc тоже закроем
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Escape') {
+            document.getElementById('popup').className = ''
+        }
+    })
+
+    // и на скролл
+    document.addEventListener('scroll', e => {
+            document.getElementById('popup').className = ''
+    })
+
     // Выбрали файл
     document.getElementById('input-file').addEventListener('change', e => {
         parseExcel(e.target.files[0]);
@@ -196,12 +208,6 @@ window.setTimeout(() => {
         }, 50)
     })
 
-    // на esc тоже закроем
-    document.addEventListener('keydown', e => {
-        if (e.key === 'Escape') {
-            document.getElementById('popup').className = ''
-        }
-    })
 
 }, 50)
 const buyList = [];
