@@ -9,8 +9,8 @@ body {
     background-color: white;
     padding: 20px;
     margin-bottom: 20px;
-    display: flex;
-    justify-content: space-between;
+    /*display: flex;*/
+    /*justify-content: space-between;*/
 }
 
 #content {
@@ -88,17 +88,30 @@ tr:nth-child(2n+1) {
     margin-right: 5px;
 }
 
+.fixed-container {
+    position: fixed;
+    right: 0;
+    top: 0;
+    height: 61px;
+    width: 350px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 10px;
+    background-color: white;
+}
+
 #price-container {
+    cursor: pointer;
     display: flex;
     justify-content: center;
-    align-content: center;
-    cursor: pointer;
+    align-items: center;
 }
 
 #popup {
-    position: absolute;
-    right: 10px;
-    top: 70px;
+    position: fixed;
+    right: 5px;
+    top: 5px;
     width: 500px;
     border-radius: 10px;
     background-color: white;
@@ -110,7 +123,6 @@ tr:nth-child(2n+1) {
 #popup_top {
     display: flex;
     justify-content: space-between;
-    border-bottom: 1px solid #cbcaca;
     padding: 5px 0 10px 0;
     margin-bottom: 10px;
 }
@@ -124,13 +136,15 @@ tr:nth-child(2n+1) {
     justify-content: center;
     align-items: center;
     font-size: 18px;
+    width: 15px;
 }
 
 .add_minus {
     user-select: none;
     padding: 5px 10px;
     cursor: pointer;
-    background-color: #cbcaca;
+    background-color: #6c757d;
+    color: white;
     border-top-left-radius: 5px;
     border-bottom-left-radius: 5px;
 }
@@ -143,7 +157,8 @@ tr:nth-child(2n+1) {
     user-select: none;
     padding: 5px 10px;
     cursor: pointer;
-    background-color: #cbcaca;
+    background-color: #6c757d;
+    color: white;
     border-top-right-radius: 5px;
     border-bottom-right-radius: 5px;
 }
@@ -158,6 +173,7 @@ tr:nth-child(2n+1) {
     border-radius: 5px;
     cursor: pointer;
     user-select: none;
+    font-weight: 500;
 }
 
 .mr-2 {
@@ -174,7 +190,7 @@ tr:nth-child(2n+1) {
 /*#dc3545*/
 
 .popup-table-title {
-    width: 80%;
+    width: 65%;
 }
 
 .popup-table-price {
@@ -212,6 +228,12 @@ tr:nth-child(2n+1) {
     color: white;
 }
 
+.button-collapse {
+    background-color: white;
+    border: 1px solid #6c757d;
+    color: #6c757d;
+}
+
 .button-copy {
     background-color: #28a745;
     color: white;
@@ -224,4 +246,21 @@ tr:nth-child(2n+1) {
 
 .cursor-pointer {
     cursor: pointer;
+}
+
+#popup_top_count {
+    font-weight: 500;
+    color: #6c757d;
+}
+
+#popup_top_total-price {
+    font-weight: 500;
+    color: #28a745;
+}
+
+.tutorial {
+    background-color: white;
+    padding: 20px;
+    color: #6c757d;
+    margin: 10px 20px 0px 20px;
 }

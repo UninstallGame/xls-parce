@@ -170,6 +170,10 @@ const unsorted = {
     values: []
 }
 
+let hide = true
+
+let init = false;
+
 window.setTimeout(() => {
     // Если нажали не на пп, скрыть его
     document.body.addEventListener('mousedown', e => {
@@ -194,6 +198,13 @@ window.setTimeout(() => {
         window.setTimeout(() => {
             updatePopupContent();
         }, 50)
+    })
+
+    // на esc тоже закроем
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Escape') {
+            document.getElementById('popup').className = ''
+        }
     })
 
 }, 50)
@@ -297,8 +308,8 @@ function updatePopupContent() {
         table.appendChild(tr)
 
         document.getElementById('positions').appendChild(table)
-        document.getElementById('popup').className = 'show-pp';
     })
+    document.getElementById('popup').className = 'show-pp';
 }
 
 // Разобрать все по брендам
@@ -318,8 +329,14 @@ function sortToBrands(arr) {
     unsortedIndexes.forEach(i => {
         unsorted.values.push(arr[i]);
     })
+    updateAllTables();
+}
+
+function updateAllTables() {
+    document.getElementById('content').innerHTML = ''
     fill(tobaccoBrands);
     fill([unsorted], 'unsorted')
+    init = true;
 }
 
 // Заполнить таблицу
@@ -351,10 +368,15 @@ function createBrandTable(obj, i) {
     brandNameSpan.id = `name-${i}`;
     brandTitle.appendChild(brandNameSpan)
     brandTitle.appendChild(brandCountSpan)
+
+    brandTable.className = obj.hide ? 'collapsed' : 'brand_table';
+    brandTitle.className = obj.hide ? 'collapsed-title' : 'brand_title';
+
     brandTitle.addEventListener('click', () => {
         obj.hide = !obj.hide
         brandTable.className = obj.hide ? 'collapsed' : 'brand_table';
         brandTitle.className = obj.hide ? 'collapsed-title' : 'brand_title';
+        updateCollapseAllButtonText();
     })
 
     obj.values.forEach((it) => {
@@ -408,6 +430,7 @@ function getNewRow(obj, brandObj) {
             obj.selected = true
             if (!brandObj.count) brandObj.count = 0
             brandObj.count += 1
+            console.log('bra', brandObj)
         }
         updateCounters(brandObj.id, brandObj.count)
         updateTotalPrice()
@@ -442,10 +465,11 @@ function updateTotalPrice() {
     unsorted.values.forEach(it => {
         if (it.selected) {
             it.totalPrice = it.basePrice * it.amount
+            totalPrice += it.totalPrice;
         }
     })
-    document.getElementById('total-price').innerText = `Ориентировочная сумма: ${totalPrice}`
-    document.getElementById('popup_top_total-price').innerText = `Итого: ~${totalPrice}`
+    document.getElementById('total-price').innerText = `Итого: ~${totalPrice}`
+    document.getElementById('popup_top_total-price').innerText = `Итого: ~${totalPrice} ₽`
 }
 
 // Обновить количество выбранного
@@ -470,16 +494,16 @@ function updateCounters() {
 
 
     unsorted.values.forEach(it => {
-        it.count = 0
+        unsorted.count = 0
         if (it.selected) {
-            it.count++
+            unsorted.count++
         }
         const elementUnsorted = document.getElementById(`count-unsorted`)
-        if (!it.count) {
+        if (!unsorted.count) {
             elementUnsorted.innerText = ''
             return;
         }
-        elementUnsorted.innerText = `Выбрано: ${it.count}`
+        elementUnsorted.innerText = `Выбрано: ${unsorted.count}`
         elementUnsorted.style.color = '#28a745'
         elementUnsorted.style.fontWeight = '500'
     })
@@ -492,6 +516,7 @@ function updateAllPositions() {
         res += it.count || 0
     })
     res += unsorted.count || 0
+    console.log(unsorted)
     document.getElementById('popup_top_count').innerText = `Товаров: ${res}`
 }
 
@@ -538,10 +563,10 @@ function changeAmount(obj, add, i) {
 
 // Удалить позицию
 function remove(obj) {
+    console.log('r', obj)
     obj.selected = false
     obj.count = 1;
-    document.getElementById('content').innerHTML = ''
-    fill(tobaccoBrands);
+    updateAllTables();
     const i = buyList.indexOf(obj)
     buyList.splice(i, 1)
     updateTotalPrice()
@@ -578,4 +603,28 @@ function addDelivery(id) {
         disableCounter: true,
     });
     updatePopupContent();
+}
+
+function collapseAllBrandCards() {
+    if (!init) {
+        return
+    }
+    tobaccoBrands.forEach(it => {
+        it.hide = hide
+    })
+
+    unsorted.hide = hide
+    updateAllTables();
+    updateCollapseAllButtonText();
+}
+
+function updateCollapseAllButtonText() {
+    if (tobaccoBrands.some(it => it.hide === true) || unsorted.hide === true) {
+        hide = false
+        document.getElementById('button-collapse').innerText = 'Развернуть все'
+        return
+    }
+    document.getElementById('button-collapse').innerText = 'Свернуть все'
+    hide = true
+
 }

@@ -17,11 +17,27 @@
 <body>
 <div class="head">
     <input id="input-file" type="file">
-    <div id="price-container">
-        <span id="total-price">Ориентировочная сумма: : 0</span>
-        <img width="16" src="assets/shopping-cart-solid.svg" alt="">
+    <div class="fixed-container">
+        <div id="button-collapse" class="button button-collapse" onclick="collapseAllBrandCards()">Свернуть все</div>
+        <div id="price-container">
+            <span id="total-price">Итого: 0</span>
+            <img width="16" src="assets/shopping-cart-solid.svg" alt="">
+        </div>
     </div>
 </div>
+
+<div class="tutorial">
+    <div style="font-weight: 500; margin-bottom: 10px">Как это работает:</div>
+    <div>1. Выберете файл который прислали в чате синей гусеницы в левом верхнем углу</div>
+    <div>2. Добавьте нужные вам позиции</div>
+    <div>3. Перейдя в корзину добавьте доставку и дополнительные позиции которых небыло в прайсе (угли к примеру)
+    </div>
+    <div>4. Укажите количество позиций</div>
+    <div>5. Нажмите "скопировать"</div>
+    <div>6. ctrl + v в чат с синей гусеницей</div>
+    <div>7. Готово</div>
+</div>
+
 <div id="content">
 </div>
 <div id="popup">
@@ -29,7 +45,10 @@
         <div id="popup_top_count">Товаров: 0</div>
         <div id="popup_top_total-price">Итого: 0</div>
     </div>
-    <div class="warning" title="Потому что считают нам по оптовой цене, а присылают розничную. + не учитывается такси и дополнительные поля">
+
+    <hr>
+    <div class="warning"
+         title="Потому что считают нам по оптовой цене, а присылают розничную. + не учитывается такси и дополнительные поля">
         <svg class="mr-2" width="20" height="18" viewBox="0 0 20 18" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M19.9035 16.4276L10.6183 0.357123C10.4799 0.118297 10.2411 0 10 0C9.75894 0 9.51788 0.118297 9.38173 0.357123L0.0965423 16.4276C-0.177996 16.9053 0.165735 17.499 0.714811 17.499H19.2852C19.8343 17.499 20.178 16.9053 19.9035 16.4276ZM9.28575 6.60677C9.28575 6.50856 9.36611 6.42821 9.46432 6.42821H10.5357C10.6339 6.42821 10.7142 6.50856 10.7142 6.60677V10.7137C10.7142 10.8119 10.6339 10.8922 10.5357 10.8922H9.46432C9.36611 10.8922 9.28575 10.8119 9.28575 10.7137V6.60677ZM10 14.4635C9.71964 14.4577 9.4527 14.3424 9.25645 14.1421C9.0602 13.9418 8.95028 13.6725 8.95028 13.3921C8.95028 13.1117 9.0602 12.8424 9.25645 12.6421C9.4527 12.4418 9.71964 12.3265 10 12.3207C10.2804 12.3265 10.5473 12.4418 10.7436 12.6421C10.9398 12.8424 11.0497 13.1117 11.0497 13.3921C11.0497 13.6725 10.9398 13.9418 10.7436 14.1421C10.5473 14.3424 10.2804 14.4577 10 14.4635V14.4635Z"
                   fill="#856404"/>
@@ -44,12 +63,12 @@
         <span> +79087753938 Ольга</span>
     </div>
 
-
-
+    <hr>
 
     <div style="margin: 20px 5px 10px 5px; font-weight: 500">Товары:</div>
     <div style="margin-bottom: 20px" id="positions"></div>
 
+    <hr>
 
     <div class="delivery" onclick="addDelivery(1)">Доставка 1ый офис (Иркутская, 26)</div>
     <div class="delivery" onclick="addDelivery(2)">Доставка 2ой офис (120й промквартал, 54Б)</div>
