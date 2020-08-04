@@ -108,7 +108,6 @@ function fill(arr, id) {
     })
 }
 
-// Создать таблицу бренда
 function createBrandTable(obj, i) {
 
     const brandGroup = document.createElement('div');
@@ -337,7 +336,7 @@ function remove(obj) {
 }
 
 // todo скопировать в буфер обемна
-function copy() {
+export function copy() {
     const result = [];
     buyList.forEach(it => {
         result.push({
@@ -357,7 +356,7 @@ function addCustom() {
     updatePopupContent();
 }
 
-function addDelivery(id) {
+export function addDelivery(id) {
     buyList.push({
         amount: 1,
         title: `+ Доставка - ${id === 1 ? 'Иркутская, 26' : '120й промквартал, 54Б'}`,
