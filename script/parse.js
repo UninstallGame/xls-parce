@@ -1,4 +1,4 @@
-import {sortToBrands} from './tmp'
+import {sortToBrands} from './tmp/tmp'
 
 export function parseExcel(event) {
     return new Promise(res => {

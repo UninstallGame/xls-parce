@@ -1,5 +1,5 @@
 import {ACTIONS, ITobacco} from "./types";
-import {tobaccoBrands, unsorted} from "./hardcode";
+import {tobaccoBrands, unsorted} from "./global-variables";
 
 export function afterTimeOut(func: Function, time = 50): void {
     window.setTimeout(() => {
@@ -25,7 +25,7 @@ export function updateWorkArrays(array: ITobacco[]) {
     array.forEach((it, i) => {
         // todo tea brands
         let found = false
-        tobaccoBrands.forEach(brand => {
+        tobaccoBrands.forEach((brand: any) => {
             if (it.title.indexOf(brand.title) !== -1) {
                 brand.values.push(it);
                 found = true;

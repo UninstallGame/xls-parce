@@ -25,4 +25,5 @@ export interface ITobacco {
 
 export interface IBuyList extends ITobacco {
     disableCounter?: boolean;
+    isEdit?: boolean
 }

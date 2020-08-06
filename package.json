@@ -5,7 +5,8 @@
   "private": true,
   "main": "index.js",
   "scripts": {
-    "build": "rimraf dist && webpack --config webpack.config.js --mode development && copyfiles --flat index.html dist && rimraf dist/main.js && copyfiles --flat script/other/*.js dist && copyfiles --flat assets/* dist/assets"
+    "build": "rimraf dist && webpack --config webpack.config.js --mode development && copyfiles --flat index.html dist && rimraf dist/main.js && copyfiles --flat script/other/*.js dist && copyfiles --flat assets/* dist/assets",
+    "soft-build": "rimraf dist/bundle.js && rimraf dist/main.js && rimraf dist/style.css.js && webpack --config webpack.config.js --mode development"
   },
   "keywords": [],
   "author": "",

@@ -1,7 +1,8 @@
 import {getElement} from "./help-functions";
-import {ITobaccoBrand} from "./types";
-import {getBrandTable} from "./creator";
-import {teaBrands, tobaccoBrands, unsorted} from "./hardcode";
+import {getBrandTable, getChangeCounter} from "./creator";
+
+import {buyList, teaBrands, tobaccoBrands, unsorted} from "./global-variables";
+import {IBuyList, ITobacco} from "./types";
 
 export class Page {
     get totalCount(): number {
@@ -27,15 +28,134 @@ export class Page {
     private _totalPrice: number = 0;
     // Общий счетчик
     private _totalCount: number = 0;
+    // Для сворачивания всех брендов
+    private hide = true
+    // Загружен ли прайс
+    private init = false
 
     constructor() {
     }
 
+    // Добавить доставку
+    public addDelivery(id: number) {
+        buyList.push(<IBuyList>{
+            count: 1,
+            title: `+ Доставка - ${id === 1 ? 'Иркутская, 26' : '120й промквартал, 54Б'}`,
+            disableCounter: true,
+        });
+        this.updatePopupContent();
+    }
+
+    // Добавить кастомное поле с инпутом
+    public addCustomField() {
+        buyList.push(<IBuyList>{
+            count: 1,
+            isEdit: true
+        });
+        this.updatePopupContent();
+    }
+
+    // Обновить все данные попапа
+    public updatePopupContent() {
+        getElement('positions').innerHTML = '';
+        buyList.forEach((it, i) => {
+            const table = document.createElement('table');
+            table.id = 'popup-table'
+            const tr = document.createElement('tr');
+            tr.style.backgroundColor = 'white'
+            if (buyList.length !== i + 1) {
+                tr.style.borderBottom = '1px solid #cbcaca'
+            }
+
+            let td1;
+
+            if (it.isEdit) {
+                td1 = document.createElement('td')
+                const input = document.createElement('input')
+                input.className = 'popup-input'
+                input.value = it.title || '';
+                input.addEventListener('change', (e) => {
+                    // @ts-ignore
+                    it.title = e.target.value;
+                })
+                td1.appendChild(input)
+            } else {
+                td1 = document.createElement('td')
+                td1.innerText = it.title
+            }
+
+            td1.className = 'popup-table-title'
+
+            const td2 = document.createElement('td')
+            if (it.basePrice) {
+                td2.innerText = it.basePrice + ' ₽'
+            }
+            td2.className = 'popup-table-price'
+
+            const td3 = document.createElement('td')
+            const amount = getChangeCounter(it, i, () => this.updateTotalPrice())
+            td3.className = 'popup-table-counter'
+
+            if (!it.disableCounter) {
+                td3.appendChild(amount)
+            }
+
+            const td4 = document.createElement('td')
+
+            const removeBtn = document.createElement('img');
+            removeBtn.src = 'assets/trash-solid.svg'
+            removeBtn.width = 16
+            removeBtn.className = 'cursor-pointer'
+            removeBtn.addEventListener('click', () => this.remove(it))
+
+            td4.appendChild(removeBtn)
+
+
+            tr.appendChild(td1);
+            tr.appendChild(td2);
+            tr.appendChild(td3);
+            tr.appendChild(td4);
+
+            table.appendChild(tr)
+
+            getElement('positions').appendChild(table)
+        })
+        getElement('popup').className = 'show-pp';
+    }
+
+    // Скопировать
+    public copy() {
+        const result: { title: string, count: number }[] = [];
+        buyList.forEach(it => {
+            result.push({
+                title: it.title,
+                count: it.count,
+            });
+        })
+        console.log('copy', result)
+    }
+
+    // Обновить все данные страницы
     public updatePage() {
         getElement('content').innerHTML = '';
-        tobaccoBrands.forEach(it => this.add(getBrandTable(it, this.updateCollapseAllButtonText, this.onBuyClick)));
-        teaBrands.forEach(it => this.add(getBrandTable(it, this.updateCollapseAllButtonText, this.onBuyClick)));
-        this.add(getBrandTable(unsorted, this.updateCollapseAllButtonText, this.onBuyClick));
+        tobaccoBrands.forEach((it: any) => this.add(getBrandTable(it, () => this.updateCollapseAllButtonText(), () => this.onBuyClick())));
+        teaBrands.forEach((it: any) => this.add(getBrandTable(it, () => this.updateCollapseAllButtonText(), () => this.onBuyClick())));
+        this.add(getBrandTable(unsorted, () => this.updateCollapseAllButtonText(), () => this.onBuyClick()));
+        this.init = true;
+    }
+
+    // Переключить состояние видимости таблиц брендов
+    public toggleVisibleAllBrandCards() {
+        if (!this.init) {
+            return
+        }
+        tobaccoBrands.forEach(it => {
+            it.hide = this.hide
+        })
+
+        unsorted.hide = this.hide
+        this.updatePage();
+        this.updateCollapseAllButtonText();
     }
 
     // Добавить в главный контейнер
@@ -43,14 +163,15 @@ export class Page {
         getElement('content').appendChild(element);
     }
 
-    // По нажатию на шапку таблицы ↓
+    // По нажатию на шапку таблицы ↓ (обновить текст на кнопке сворачиввания)
     private updateCollapseAllButtonText() {
-        console.log(tobaccoBrands)
-        if (tobaccoBrands.some(it => !it.hide) || teaBrands.some(it => !it.hide) || !unsorted.hide) {
+        if (tobaccoBrands.find((it: any) => it.hide === true) || teaBrands.find((it: any) => it.hide === true) || unsorted.hide === true) {
+            this.hide = false
             getElement('button-collapse').innerText = 'Развернуть все'
             return
         }
         getElement('button-collapse').innerText = 'Свернуть все'
+        this.hide = true
     }
 
     // По нажатию на "купить" в таблице ↓
@@ -80,7 +201,7 @@ export class Page {
             element.style.fontWeight = '500'
         })
 
-        unsorted.values.forEach(it => {
+        unsorted.values.forEach((it: any) => {
             unsorted.count = 0
             if (it.selected) {
                 unsorted.count++
@@ -96,31 +217,15 @@ export class Page {
         })
     }
 
-    // Обновить общую стоимость
+    // Обновить цену
     private updateTotalPrice() {
         let result = 0
-        tobaccoBrands.forEach(it => {
-            if (!it.count) {
-                return
-            }
-
-            it.values.forEach(item => {
-                if (!item.selected) {
-                    return
-                }
-
-                item.totalPrice = item.basePrice * item.count
-                result += item.totalPrice;
-            })
-        })
-
-        unsorted.values.forEach(it => {
-            if (it.selected) {
-                it.totalPrice = it.basePrice * it.count
-                result += it.totalPrice;
+        buyList.forEach(it => {
+            if (it.basePrice && it.count) {
+                result += it.basePrice * it.count
             }
         })
-
+        console.log(buyList, result);
         this.totalPrice = result;
     }
 
@@ -134,4 +239,15 @@ export class Page {
         this.totalCount = result
     }
 
+    // Удалить позицию из корзины
+    private remove(obj: ITobacco) {
+        obj.selected = false
+        obj.count = 1;
+        const i = buyList.indexOf(obj)
+        buyList.splice(i, 1)
+        this.updatePopupContent();
+        this.updateTotalCount();
+        this.updateTotalPrice();
+        this.updatePage();
+    }
 }

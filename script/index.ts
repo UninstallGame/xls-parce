@@ -3,12 +3,30 @@ import {ACTIONS} from "./types";
 
 // @ts-ignore
 import {parseExcel} from "./parse";
-// @ts-ignore
-import {collapseAllBrandCards, updatePopupContent, addDelivery, copy, addCustom} from "./tmp";
 import {Page} from "./Page";
-import {teaBrands, tobaccoBrands, unsorted} from "./hardcode";
 
 let page = new Page();
+
+/**
+ * UPCOMING RELEASES
+ *
+ * v1.0.2
+ * 1. Дата документа
+ * 2. Копирование в буфер обмена. лол)
+ * 3. Разделение на табак и чай
+ * 4. БАГ. Сворачивание всех убивает счетчики выбранных внутри бренда
+ *
+ * v1.1.0
+ * 1. Создание нескольких заказов
+ * 2. Нормальная кнопка загрузить
+ * 3. Цвета в таблице более спокойные
+ * 4. ПП change log с флагом в locale storage
+ * 5. Редезайн шапки
+ * 6. Мобилко-сайт
+ *
+ * v1.2.0
+ * 1. Автозагрузка через бота
+ */
 
 afterTimeOut(() => {
     // Если нажали не на пп, скрыть его
@@ -41,18 +59,18 @@ afterTimeOut(() => {
 
     // Нажали на то что должно открывать пп
     addEvent(ACTIONS.CLICK, 'price-container', () => {
-        afterTimeOut(updatePopupContent);
+        afterTimeOut(() => page.updatePopupContent());
     })
     // Свернуть все
-    addEvent(ACTIONS.CLICK, 'button-collapse', collapseAllBrandCards)
+    addEvent(ACTIONS.CLICK, 'button-collapse', () => page.toggleVisibleAllBrandCards())
     // Доставка 1
-    addEvent(ACTIONS.CLICK, 'delivery-1', () => addDelivery(1))
+    addEvent(ACTIONS.CLICK, 'delivery-1', () => page.addDelivery(1))
     // Доставка 2
-    addEvent(ACTIONS.CLICK, 'delivery-2', () => addDelivery(2))
+    addEvent(ACTIONS.CLICK, 'delivery-2', () => page.addDelivery(2))
     // Скопировать в буфер обмена
-    addEvent(ACTIONS.CLICK, 'button-copy', copy);
+    addEvent(ACTIONS.CLICK, 'button-copy', () => page.copy());
     // Добавить свое поле
-    addEvent(ACTIONS.CLICK, ' button-add', addCustom)
+    addEvent(ACTIONS.CLICK, 'button-add', () => page.addCustomField())
 })
 
 function findIdInElements(elements: HTMLElement[], id: string) {

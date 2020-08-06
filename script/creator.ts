@@ -1,6 +1,7 @@
 import {ITobacco, ITobaccoBrand} from "./types";
 // todo По хорошему и его передавать парамтром
 import {buyList} from "./global-variables";
+import {getElement} from "./help-functions";
 
 /**
  * Функция создания таблицы
@@ -47,6 +48,45 @@ export function getBrandTable(tobaccoBrand: ITobaccoBrand, onBrandClick: () => v
     brandGroup.appendChild(brandTable);
 
     return brandGroup;
+}
+
+export function getChangeCounter(obj: ITobacco, i: number, func: Function) {
+    const result = document.createElement('div')
+    result.className = 'add';
+
+    const minus = document.createElement('div')
+    minus.className = 'add_minus'
+    minus.innerText = '-'
+    minus.addEventListener('click', () => changeAmount(obj, false, i, func))
+
+    const count = document.createElement('div')
+    count.id = `add_count-${i}`
+    count.className = 'add_count';
+    count.innerText = obj.count.toString() || '1'
+
+    const plus = document.createElement('div')
+    plus.className = 'add_plus'
+    plus.innerText = '+'
+    plus.addEventListener('click', () => changeAmount(obj, true, i, func))
+
+    result.appendChild(minus)
+    result.appendChild(count)
+    result.appendChild(plus)
+
+    return result;
+}
+
+function changeAmount(obj: ITobacco, add: boolean, i: number, func: Function) {
+    if (add) {
+        obj.count++
+    } else {
+        if (obj.count === 1) {
+            return;
+        }
+        obj.count--
+    }
+    getElement(`add_count-${i}`).innerText = `${obj.count}`
+    func();
 }
 
 function getNewRow(tobacco: ITobacco, tobaccoBrand: ITobaccoBrand, onBuyClick: () => void) {

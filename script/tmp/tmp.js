@@ -1,4 +1,4 @@
-import {tobaccoBrands, unsorted} from "./hardcode";
+import {tobaccoBrands, unsorted} from "../global-variables";
 
 let hide = true
 let init = false;
@@ -6,7 +6,7 @@ const buyList = [];
 let totalPrice = 0
 
 
-// Обновить контент в попапе
+// V Обновить контент в попапе
 export function updatePopupContent() {
     document.getElementById('positions').innerHTML = '';
     buyList.forEach((it, i) => {
@@ -269,7 +269,7 @@ function updateCounters() {
     })
 }
 
-// Обновить количество выбранных позиций в пп
+// V Обновить количество выбранных позиций в пп
 function updateAllPositions() {
     let res = 0;
     tobaccoBrands.forEach(it => {
@@ -280,7 +280,7 @@ function updateAllPositions() {
     document.getElementById('popup_top_count').innerText = `Товаров: ${res}`
 }
 
-// Взять крутилку количества
+// V Взять крутилку количества
 function getChangeCounter(obj, i) {
     const result = document.createElement('div')
     result.className = 'add';
@@ -307,7 +307,7 @@ function getChangeCounter(obj, i) {
     return result;
 }
 
-// Работает в паре с крутилкой. Меняет количество позиций
+// V Работает в паре с крутилкой. Меняет количество позиций
 function changeAmount(obj, add, i) {
     if (add) {
         obj.amount++
@@ -321,59 +321,7 @@ function changeAmount(obj, add, i) {
     document.getElementById(`add_count-${i}`).innerText = `${obj.amount}`
 }
 
-// Удалить позицию
-function remove(obj) {
-    console.log('r', obj)
-    obj.selected = false
-    obj.count = 1;
-    updateAllTables();
-    const i = buyList.indexOf(obj)
-    buyList.splice(i, 1)
-    updateTotalPrice()
-    updatePopupContent();
-    updateCounters();
-    updateAllPositions();
-}
-
-// todo скопировать в буфер обемна
-export function copy() {
-    const result = [];
-    buyList.forEach(it => {
-        result.push({
-            title: it.title,
-            amount: it.amount,
-        });
-    })
-    console.log('copy', result)
-}
-
-// Добавить кастомное поле с инпутом
-function addCustom() {
-    buyList.push({
-        amount: 1,
-        isEdit: true
-    });
-    updatePopupContent();
-}
-
-export function addDelivery(id) {
-    buyList.push({
-        amount: 1,
-        title: `+ Доставка - ${id === 1 ? 'Иркутская, 26' : '120й промквартал, 54Б'}`,
-        disableCounter: true,
-    });
-    updatePopupContent();
-}
-
 export function collapseAllBrandCards() {
-    if (!init) {
-        return
-    }
-    tobaccoBrands.forEach(it => {
-        it.hide = hide
-    })
-
-    unsorted.hide = hide
     updateAllTables();
     updateCollapseAllButtonText();
     updateCounters();
