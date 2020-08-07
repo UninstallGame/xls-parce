@@ -57,6 +57,7 @@ export class Page {
 
     // Обновить все данные попапа
     public updatePopupContent() {
+        this.updateTotalCount();
         getElement('positions').innerHTML = '';
         buyList.forEach((it, i) => {
             const table = document.createElement('table');
@@ -156,6 +157,7 @@ export class Page {
         unsorted.hide = this.hide
         this.updatePage();
         this.updateCollapseAllButtonText();
+        this.updateCounters();
     }
 
     // Добавить в главный контейнер
@@ -225,18 +227,12 @@ export class Page {
                 result += it.basePrice * it.count
             }
         })
-        console.log(buyList, result);
         this.totalPrice = result;
     }
 
     // Обновить общее количество выбранных товаров
     private updateTotalCount() {
-        let result = 0;
-        tobaccoBrands.forEach(it => {
-            result += it.count || 0
-        })
-        result += unsorted.count || 0
-        this.totalCount = result
+        this.totalCount = buyList.length
     }
 
     // Удалить позицию из корзины
@@ -246,7 +242,6 @@ export class Page {
         const i = buyList.indexOf(obj)
         buyList.splice(i, 1)
         this.updatePopupContent();
-        this.updateTotalCount();
         this.updateTotalPrice();
         this.updatePage();
     }
