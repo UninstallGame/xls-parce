@@ -7,7 +7,7 @@ export function afterTimeOut(func: Function, time = 50): void {
     }, time)
 }
 
-export function addEvent(action: ACTIONS, elementId: string, func: Function): void {
+export function addEvent(action: ACTIONS, elementId: string, func: (x: Event) => void): void {
     const element = getElement(elementId)
     element.addEventListener(action, e => func(e));
 }

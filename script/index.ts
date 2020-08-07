@@ -30,7 +30,7 @@ afterTimeOut(() => {
     })
 
     // Выбрали файл
-    addEvent(ACTIONS.CHANGE, 'input-file', async (e: any) => {
+    addEvent(ACTIONS.CHANGE, 'input-file', async (e: Event) => {
         const result = await parseExcel(e);
         updateWorkArrays(result);
         page.updatePage();
