@@ -137,3 +137,9 @@ function getNewRow(tobacco: ITobacco, tobaccoBrand: ITobaccoBrand, onBuyClick: (
     tr.appendChild(td3);
     return tr;
 }
+
+export function getH2(str: string): HTMLElement {
+    const h2 = document.createElement('h2')
+    h2.innerText = str;
+    return h2
+}

@@ -27,3 +27,15 @@ export interface IBuyList extends ITobacco {
     disableCounter?: boolean;
     isEdit?: boolean
 }
+
+export enum TYPE {
+    TOBACCO,
+    TEA,
+    ANY
+}
+
+export enum DOCUMENT_SECTION {
+    HEADER,
+    TOBACCO,
+    TEA
+}

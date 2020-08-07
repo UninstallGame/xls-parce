@@ -1,8 +1,8 @@
 import {getElement} from "./help-functions";
-import {getBrandTable, getChangeCounter} from "./creator";
+import {getBrandTable, getChangeCounter, getH2} from "./creator";
 
 import {buyList, teaBrands, tobaccoBrands, unsorted} from "./global-variables";
-import {IBuyList, ITobacco} from "./types";
+import {IBuyList, ITobacco, ITobaccoBrand} from "./types";
 
 export class Page {
     get totalCount(): number {
@@ -138,10 +138,17 @@ export class Page {
 
     // Обновить все данные страницы
     public updatePage() {
+        const fillTobaccoBrand = (it: ITobaccoBrand) => {
+            this.add(getBrandTable(it, () => this.updateCollapseAllButtonText(), () => this.onBuyClick()))
+        }
+
         getElement('content').innerHTML = '';
-        tobaccoBrands.forEach((it: any) => this.add(getBrandTable(it, () => this.updateCollapseAllButtonText(), () => this.onBuyClick())));
-        teaBrands.forEach((it: any) => this.add(getBrandTable(it, () => this.updateCollapseAllButtonText(), () => this.onBuyClick())));
-        this.add(getBrandTable(unsorted, () => this.updateCollapseAllButtonText(), () => this.onBuyClick()));
+        this.add(getH2('Табак'));
+        tobaccoBrands.forEach(fillTobaccoBrand);
+        this.add(getH2('Чай'));
+        teaBrands.forEach(fillTobaccoBrand);
+        this.add(getH2('Не вышло'));
+        fillTobaccoBrand(unsorted);
         this.init = true;
     }
 
@@ -151,6 +158,10 @@ export class Page {
             return
         }
         tobaccoBrands.forEach(it => {
+            it.hide = this.hide
+        })
+
+        teaBrands.forEach(it => {
             it.hide = this.hide
         })
 

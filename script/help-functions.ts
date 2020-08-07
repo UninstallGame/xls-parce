@@ -1,5 +1,5 @@
-import {ACTIONS, ITobacco} from "./types";
-import {tobaccoBrands, unsorted} from "./global-variables";
+import {ACTIONS, ITobacco, ITobaccoBrand} from "./types";
+import {teaBrands, tobaccoBrands, unsorted} from "./global-variables";
 
 export function afterTimeOut(func: Function, time = 50): void {
     window.setTimeout(() => {
@@ -20,21 +20,21 @@ export function getElement(elementId: string): HTMLElement {
     return element;
 }
 
-export function updateWorkArrays(array: ITobacco[]) {
-    const unsortedIndexes: number[] = [];
-    array.forEach((it, i) => {
-        // todo tea brands
-        let found = false
-        tobaccoBrands.forEach((brand: any) => {
-            if (it.title.indexOf(brand.title) !== -1) {
-                brand.values.push(it);
-                found = true;
-            }
-        })
-        if (!found) unsortedIndexes.push(i)
-    })
+export function updateWorkArrays(data: { tobacco: ITobacco[], tea: ITobacco[], documentDate: string }) {
 
-    unsortedIndexes.forEach(i => {
-        unsorted.values.push(array[i]);
-    })
+    const xxx = (brands: ITobaccoBrand[]): (it: ITobacco) => void => {
+        return (it) => {
+            let found = false
+            brands.forEach((brand: any) => {
+                if (it.title.indexOf(brand.title) !== -1) {
+                    brand.values.push(it);
+                    found = true;
+                }
+            })
+            if (!found) unsorted.values.push(it)
+        }
+    }
+
+    data.tobacco.forEach(xxx(tobaccoBrands))
+    data.tea.forEach(xxx(teaBrands))
 }

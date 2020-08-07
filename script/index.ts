@@ -34,6 +34,7 @@ afterTimeOut(() => {
         const result = await parseExcel(e);
         updateWorkArrays(result);
         page.updatePage();
+        getElement('document-time').innerText = `Дата документа: ${result.documentDate}`
     });
 
     // Нажали на то что должно открывать пп
