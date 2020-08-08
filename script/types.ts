@@ -39,3 +39,8 @@ export enum DOCUMENT_SECTION {
     TOBACCO,
     TEA
 }
+
+export interface ICoords {
+    x: number,
+    y: number
+}

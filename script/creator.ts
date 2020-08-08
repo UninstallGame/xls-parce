@@ -1,4 +1,4 @@
-import {ITobacco, ITobaccoBrand} from "./types";
+import {ICoords, ITobacco, ITobaccoBrand} from "./types";
 // todo По хорошему и его передавать парамтром
 import {buyList} from "./global-variables";
 import {getElement} from "./help-functions";
@@ -143,3 +143,44 @@ export function getH2(str: string): HTMLElement {
     h2.innerText = str;
     return h2
 }
+
+export function createGhostCursor(id: string): HTMLElement {
+    const cursor = document.createElement('div')
+    cursor.className = 'ghost-cursor'
+    cursor.id = id;
+    cursor.innerText = id;
+    document.body.appendChild(cursor)
+    return cursor
+}
+
+let old: ICoords = {x: 0, y: 0};
+
+export function ghostCursorMove(id: string, pos: { x: number, y: number }) {
+    const element = getElement(id)
+
+    const diff = {
+        x: pos.x - old.x,
+        y: pos.y - old.y
+    }
+
+    console.log(pos, old, diff);
+
+    element.style.left = old.x + diff.x + 'px'
+    element.style.top = old.y + diff.y + 'px'
+
+
+    // if (pos.x > old.x) {
+    //     element.style.left = old.x + diff.x + 'px'
+    // } else {
+    //     element.style.left = old.x - diff.x + 'px'
+    // }
+    //
+    // if (pos.y > old.y) {
+    //     element.style.top = old.x + diff.y + 'px'
+    // } else {
+    //     element.style.top = old.x - diff.y + 'px'
+    // }
+    old = pos;
+}
+
+

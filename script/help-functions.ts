@@ -38,3 +38,11 @@ export function updateWorkArrays(data: { tobacco: ITobacco[], tea: ITobacco[], d
     data.tobacco.forEach(xxx(tobaccoBrands))
     data.tea.forEach(xxx(teaBrands))
 }
+
+function wait(time: number): Promise<boolean> {
+    return new Promise<boolean>(res => {
+        window.setTimeout(() => {
+            res(true)
+        }, time)
+    })
+}

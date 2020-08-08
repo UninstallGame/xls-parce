@@ -1,13 +1,18 @@
 import {addEvent, afterTimeOut, getElement, updateWorkArrays} from "./help-functions";
-import {ACTIONS, IBuyList} from "./types";
 
 // @ts-ignore
 import {parseExcel} from "./parse";
 import {Page} from "./Page";
+import {createGhostCursor, ghostCursorMove} from "./creator";
+import {ACTIONS, IBuyList, ICoords} from "./types";
+import {DATA_PROTOCOL_TYPE, IDataProtocolAnswer, IDataProtocolRequest} from "./server-types/types";
 
 let page = new Page();
+let mouseMoveIntervalId: number;
+let old: ICoords = {x: 0, y: 0};
 
-afterTimeOut(() => {
+document.addEventListener("DOMContentLoaded", () => {
+    console.log('DOMContentLoaded')
     // Если нажали не на пп, скрыть его
     document.addEventListener(ACTIONS.MOUSEDOWN, e => {
         // @ts-ignore
@@ -29,12 +34,23 @@ afterTimeOut(() => {
         getElement('popup').className = ''
     })
 
-    // document.addEventListener('mousemove', e => {
-    //     setInterval(() => {
-    //         const {x, y} = e;
-    //         sendPositionCursor({x, y})
-    //     }, 50)
-    // })
+    createGhostCursor('meow1213')
+
+    document.addEventListener('mousemove', e => {
+        // if (mouseMoveIntervalId) {
+        //     return
+        // }
+        // mouseMoveIntervalId = window.setTimeout(() => {
+        const {x, y} = e
+        if (Math.abs(x - old.x) < 50 || Math.abs(y - old.y) < 50) {
+            return
+        }
+        // sendPositionCursor({x, y})
+        ghostCursorMove('meow1213', {x, y})
+        // mouseMoveIntervalId = 0;
+        old = {x, y}
+        // }, 500)
+    })
 
     // Выбрали файл
     addEvent(ACTIONS.CHANGE, 'input-file', async (e: Event) => {
@@ -60,25 +76,31 @@ afterTimeOut(() => {
     addEvent(ACTIONS.CLICK, 'button-add', () => page.addCustomField())
 
     // @ts-ignore
-    const socket = io("http://192.168.1.250:3000/");
+    const socket = io("http://192.168.1.206:3000/");
     console.log(socket)
 
-    socket.on("message", function (data: any) {
+    socket.on("message", function (data: IDataProtocolAnswer) {
+        if (data.type === DATA_PROTOCOL_TYPE.USER_JOIN) {
+            createGhostCursor(data.from)
+        }
+        if (data.type === DATA_PROTOCOL_TYPE.CURSOR) {
+            ghostCursorMove(data.from, data.data)
+        }
         console.log(data);
     });
 
     function sendBuyList(copyList: IBuyList[]) {
-        const req = {
-            type: 'buylist',
-            copyList
+        const req: IDataProtocolRequest = {
+            type: DATA_PROTOCOL_TYPE.BUY_LIST,
+            data: copyList
         }
         socket.emit("message", req);
     }
 
     function sendPositionCursor(pos: { x: number, y: number }) {
-        const req = {
-            type: 'mousemove',
-            pos,
+        const req: IDataProtocolRequest = {
+            type: DATA_PROTOCOL_TYPE.CURSOR,
+            data: pos,
         }
         socket.emit("message", req);
     }

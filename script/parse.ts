@@ -140,6 +140,6 @@ function checkSection(cellValue: string): DOCUMENT_SECTION | null {
     return null;
 }
 
-function extractNumber(str: string): number {
+export function extractNumber(str: string): number {
     return Number(str.replace(/\D/, ''))
 }
