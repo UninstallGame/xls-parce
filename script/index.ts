@@ -1,5 +1,5 @@
 import {addEvent, afterTimeOut, getElement, updateWorkArrays} from "./help-functions";
-import {ACTIONS} from "./types";
+import {ACTIONS, IBuyList} from "./types";
 
 // @ts-ignore
 import {parseExcel} from "./parse";
@@ -29,6 +29,13 @@ afterTimeOut(() => {
         getElement('popup').className = ''
     })
 
+    // document.addEventListener('mousemove', e => {
+    //     setInterval(() => {
+    //         const {x, y} = e;
+    //         sendPositionCursor({x, y})
+    //     }, 50)
+    // })
+
     // Выбрали файл
     addEvent(ACTIONS.CHANGE, 'input-file', async (e: Event) => {
         const result = await parseExcel(e);
@@ -48,9 +55,33 @@ afterTimeOut(() => {
     // Доставка 2
     addEvent(ACTIONS.CLICK, 'delivery-2', () => page.addDelivery(2))
     // Скопировать в буфер обмена
-    addEvent(ACTIONS.CLICK, 'button-copy', () => page.copy());
+    addEvent(ACTIONS.CLICK, 'button-copy', () => sendBuyList(page.buyList));
     // Добавить свое поле
     addEvent(ACTIONS.CLICK, 'button-add', () => page.addCustomField())
+
+    // @ts-ignore
+    const socket = io("http://192.168.1.250:3000/");
+    console.log(socket)
+
+    socket.on("message", function (data: any) {
+        console.log(data);
+    });
+
+    function sendBuyList(copyList: IBuyList[]) {
+        const req = {
+            type: 'buylist',
+            copyList
+        }
+        socket.emit("message", req);
+    }
+
+    function sendPositionCursor(pos: { x: number, y: number }) {
+        const req = {
+            type: 'mousemove',
+            pos,
+        }
+        socket.emit("message", req);
+    }
 })
 
 function findIdInElements(elements: HTMLElement[], id: string) {

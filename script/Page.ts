@@ -5,6 +5,10 @@ import {buyList, teaBrands, tobaccoBrands, unsorted} from "./global-variables";
 import {IBuyList, ITobacco, ITobaccoBrand} from "./types";
 
 export class Page {
+    get buyList(): IBuyList[] {
+        return buyList
+    }
+
     get totalCount(): number {
         return this._totalCount;
     }
@@ -125,15 +129,8 @@ export class Page {
     }
 
     // Скопировать
-    public copy() {
-        const result: { title: string, count: number }[] = [];
-        buyList.forEach(it => {
-            result.push({
-                title: it.title,
-                count: it.count,
-            });
-        })
-        console.log('copy', result)
+    public getBuyList() {
+        return buyList
     }
 
     // Обновить все данные страницы
